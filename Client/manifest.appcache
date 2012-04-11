@@ -1,0 +1,23 @@
+#MIME should be text/cache-manifest
+
+#In the CACHE section you declare which files should be cached. An important and interesting note is that these files will be served from the cache, even if you're online.
+
+#In the NETWORK section you declare which files the browser should try to download from the server, regardless of whether the user is online or offline.
+
+#In the last section, the FALLBACK section, you can define fallback resources to be used when the user is offline.
+
+
+CACHE MANIFEST
+
+CACHE:
+/css/styles.css
+/js/scripts.js
+#/img/logo.png
+
+#http://example.com/css/styles.css
+
+#FALLBACK:
+#/ /offline.html
+
+NETWORK:
+*

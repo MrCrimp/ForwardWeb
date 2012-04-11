@@ -1,4 +1,4 @@
-<!doctype html>
+<!doctype html  manifest="manifest.appcache">
 <!-- paulirish.com/2008/conditional-stylesheets-vs-css-hacks-answer-neither/ -->
 <!--[if lt IE 7]> <html class="no-js lt-ie9 lt-ie8 lt-ie7" lang="en"> <![endif]-->
 <!--[if IE 7]>    <html class="no-js lt-ie9 lt-ie8" lang="en"> <![endif]-->
@@ -19,7 +19,7 @@
   <meta name="description" content="">
 
   <!-- Mobile viewport optimized: h5bp.com/viewport -->
-  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <meta name="viewport" content="width=device-width">
     
   <!-- bootstrap integration start -->
     <!-- Le HTML5 shim, for IE6-8 support of HTML elements -->
@@ -51,14 +51,16 @@
 
 <body>
   <header>Do your thing..</header>
+  
   <header class="header-ignore" id="as-sidebar">
+  
     <p>Add chords</p> 
     <div class="menu_light_theme"><!-- BEGIN MENU WRAPPER -->
         <ul class="menu"><!-- BEGIN MENU -->
             <li>
                 <h4>E</h4>
             
-                <div class="dropdown_2columns">
+                <div class="dropdown_2columns align_left">
                                         
                         <div class="col_2 firstcolumn">
                             <h4>Select chord:</h4>
@@ -108,9 +110,11 @@
   <script>window.jQuery || document.write('<script src="js/libs/jquery-1.7.2.min.js"><\/script>')</script>
   <script src="http://code.jquery.com/ui/1.8.17/jquery-ui.min.js"></script>
   
+  <!-- TODO: add mobiscroll + swipejs, http://demo.mobiscroll.com/ http://swipejs.com -->
+  
   <!-- scripts concatenated and minified via build script -->
-  <script defer src="js/plugins.js"></script>
-  <script defer src="js/script.js"></script>
+  <script src="js/plugins.js"></script>
+  <script src="js/script.js"></script>
   <!-- end scripts -->
 
 

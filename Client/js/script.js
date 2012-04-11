@@ -2,7 +2,7 @@
     JFO
 */
  
-$(function(){
+$(function(){ //sandbox
       
     // --------------------------------------
     // editor.js
@@ -81,19 +81,33 @@ $(function(){
             if ($("#songtitle").text().trim() === "[Song title]") selectText("songtitle");
     }
     
+    function handleTextPasting(){        
+            $('[contenteditable]').live('paste', function()
+            {
+                var $this = $(this);            
+                //more code here to remember caret position, etc            
+                $('#clipboard').val('').focus(); //put the focus in the hidden textarea so that, when the paste actually occurs, it's auto-sanitized by the textarea            
+                setTimeout(function() //then this will be executed immediately after the paste actually occurs
+                {
+                    $this.focus();
+                    document.execCommand('insertHTML', true, $('#clipboard').val());
+                });
+            });
+    }
+    
     // --------------------------------------
     // main.js
     // --------------------------------------   
     $("#main").load('static/main.html',  function(){
-        
-            //$("canvas").css({position:"relative"}).wrapAll("<div class='canvasWrap'/>"); 
+                    
+            initEditor();
             
             $('.draggable').draggable(/*{axis:'x'}*/);
             
-            initEditor();
-            
+            handleTextPasting();                        
     });
     
-});
+    
+}); //sandbox
 
 
