@@ -28,6 +28,7 @@ $(function(){ //sandbox
     
     function saveSong(){
         // Check if "key" exists in the storage
+        
         var key = $.trim($("#songtitle").text());
         var value = $.jStorage.get(key);
         if(value){ 
@@ -35,6 +36,7 @@ $(function(){ //sandbox
             $.jStorage.set(key+"_prev", value);
             $.jStorage.deleteKey(key);
         }
+        cleanText();
         // if not - load the data from the server
      	value = {title:key, text:$("#songtext").html()}
      	// and save it
@@ -52,12 +54,55 @@ $(function(){ //sandbox
         if(value){ 
             $("#songtitle").text(value.title);
             $("#songtext").html(value.text);
+            cleanText();
             return;
         }
         console.log("song '" + $.trim(key) + "' not found");
     }
     
-    function initEditor(){
+    function cleanText(){
+        $('[style]', '#songtext').removeAttr('style');
+        $('#songtext > *').addClass('text');
+    }
+    
+   function getCharacterOffsetWithin(range, node) {
+        var treeWalker = document.createTreeWalker(
+            node,
+            NodeFilter.SHOW_TEXT,
+            function(node) {
+                var nodeRange = document.createRange();
+                nodeRange.selectNode(node);
+                return nodeRange.compareBoundaryPoints(Range.END_TO_END, range) < 1 ?
+                    NodeFilter.FILTER_ACCEPT : NodeFilter.FILTER_REJECT;
+            },
+            false
+        );
+    
+        var charCount = 0;
+        while (treeWalker.nextNode()) {
+            charCount += treeWalker.currentNode.length;
+        }
+        if (range.startContainer.nodeType == 3) {
+            charCount += range.startOffset;
+        }
+        return charCount;
+  }
+  
+  function insertTextAtCursor(text) {
+        var sel, range;
+        if (window.getSelection) {
+            sel = window.getSelection();
+            if (sel.getRangeAt && sel.rangeCount) {
+                range = sel.getRangeAt(0);
+                range.deleteContents();
+                range.insertNode( document.createTextNode(text) );
+            }
+        } else if (document.selection && document.selection.createRange) {
+            document.selection.createRange().text = text;
+        }
+  }
+
+  function initEditor(){
         $("#songtitle")
                 .on("keydown", 
                         function(e){
@@ -69,14 +114,51 @@ $(function(){ //sandbox
                  .on("blur", saveSong);
                  
             $("#songtext")
-                    .on("blur",function(){            
+                    .on("blur",function(){       
+                        cleanText();
                         console.log($("#songtext").html());
                         saveSong();
                     });
                     
+            $('body').on('keyup click','.text', function() {
+                var el = document.getElementById("songtext");
+                var range = window.getSelection().getRangeAt(0);
+                var offset = getCharacterOffsetWithin(range, el);
+                $('#pos').text(offset);            
+              });
+                    
             $(window).on("hashchange", restoreSong);
-            
+                        
             restoreSong();
+            
+            $('#songtext').scroller({disabled:true, theme:'ios',
+                onClose: function(v,o){
+                            $("#songtext").scroller('option',{disabled:true});
+                            console.log('scroller disabled');
+                },
+                onSelect: function(val){
+                    restoreSelection();
+                    insertTextAtCursor(val);
+                }
+            });
+            
+            // Handle tap/mousedown hold
+            (function(){
+                
+                $(".text","#songtext")
+                    .hammer({prevent_default:false,tap_double:false, tap:false,transform:false,drag:false, css_hacks:false})                
+                    .on("hold", ".text", function onTapHold(ev) {
+                         /*ev: originalEvent: The original DOM event.
+                            position: An object with the x and y position of the gesture (e.g. the position of a tap and the center position of a transform).
+                            touches: An array of touches, containing an object with the x and the y position for every finger.
+                            */
+                         //find selection ?                         
+                         console.log('fired insert chord');
+                         $("#songtext")
+                         .scroller('option',{disabled:false}).scroller('show');
+                    });
+                
+            })($);
             
             if ($("#songtitle").text().trim() === "[Song title]") selectText("songtitle");
     }
@@ -95,6 +177,32 @@ $(function(){ //sandbox
             });
     }
     
+    function saveSelection() {
+        var result = null;
+        if (window.getSelection) {
+            sel = window.getSelection();
+            if (sel.getRangeAt && sel.rangeCount) {
+                result = sel.getRangeAt(0);
+            }
+        } else if (document.selection && document.selection.createRange) {
+            result = document.selection.createRange();
+        }
+        $("#songtext").data("cursor", saveSelection())
+        return result;
+    }
+    
+    function restoreSelection(range) {
+        range = range || $("#songtext").data("cursor");
+        if (range) {
+            if (window.getSelection) {
+                sel = window.getSelection();
+                sel.removeAllRanges();
+                sel.addRange(range);
+            } else if (document.selection && range.select) {
+                range.select();
+            }
+        }
+    }
     // --------------------------------------
     // main.js
     // --------------------------------------   
@@ -102,7 +210,16 @@ $(function(){ //sandbox
                     
             initEditor();
             
-            $('.draggable').draggable(/*{axis:'x'}*/);
+            $('ul.nav > li').draggable({
+                    //containment:'#songtext', 
+                    helper:'clone', 
+                    opacity:0.35, 
+                    cursor:'move',
+                    cursorAt: {top:35},
+                    start: function(ev, ui){
+                        //var pos = $(ui.helper).offset();
+                    }
+            });
             
             handleTextPasting();                        
     });
