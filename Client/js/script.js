@@ -114,10 +114,18 @@ $(function(){ //sandbox
                  .on("blur", saveSong);
                  
             $("#songtext")
-                    .on("blur",function(){       
+                    .on("blur",function(){   
+                        console.log("text blur")
+                        if( $(this).data("modalopen") ) return;
+                        
                         cleanText();
-                        console.log($("#songtext").html());
+                        //console.log($("#songtext").html());
                         saveSong();
+                    }).on("focus", function(){
+                        console.log("text edit");
+                    }).on("selectstart", function(){
+                        console.log("selectstart");
+                        
                     });
                     
             $('body').on('keyup click','.text', function() {
@@ -133,29 +141,40 @@ $(function(){ //sandbox
             
             $('#songtext').scroller({disabled:true, theme:'ios',
                 onClose: function(v,o){
+                            $("#songtext").data("modalopen",false);
                             $("#songtext").scroller('option',{disabled:true});
                             console.log('scroller disabled');
                 },
                 onSelect: function(val){
+                    $("#songtext").focus();
                     restoreSelection();
-                    insertTextAtCursor(val);
+                    insertTextAtCursor('[chord ' + val + ']');
+                },
+                beforeShow: function(el,inst){
+                    console.log('modalactive');
+                    document.activeElement.blur();
+                    $("#songtext").blur().data("modalopen",true);   
+                                      
+                   // ..must find a way to hide the iPad keyboard here..
                 }
             });
             
             // Handle tap/mousedown hold
             (function(){
                 
-                $(".text","#songtext")
-                    .hammer({prevent_default:false,tap_double:false, tap:false,transform:false,drag:false, css_hacks:false})                
-                    .on("hold", ".text", function onTapHold(ev) {
-                         /*ev: originalEvent: The original DOM event.
+                $("#songtext")
+                    .hammer({prevent_default:false,tap_double:false, tap:false,transform:false,drag:true, css_hacks:false})   
+                    .bind("hold", function(ev){
+                        /*ev: originalEvent: The original DOM event.
                             position: An object with the x and y position of the gesture (e.g. the position of a tap and the center position of a transform).
                             touches: An array of touches, containing an object with the x and the y position for every finger.
                             */
-                         //find selection ?                         
-                         console.log('fired insert chord');
-                         $("#songtext")
-                         .scroller('option',{disabled:false}).scroller('show');
+                            
+                        console.log('hold works');
+                        if( saveSelection() ) return false;
+                        //$("#songtext").blur();
+                        $("#songtext").scroller('option',{disabled:false}).scroller('show');
+                        //return false;
                     });
                 
             })($);
@@ -178,7 +197,8 @@ $(function(){ //sandbox
     }
     
     function saveSelection() {
-        var result = null;
+        // returns false if selection length is 0
+        var result;
         if (window.getSelection) {
             sel = window.getSelection();
             if (sel.getRangeAt && sel.rangeCount) {
@@ -187,8 +207,8 @@ $(function(){ //sandbox
         } else if (document.selection && document.selection.createRange) {
             result = document.selection.createRange();
         }
-        $("#songtext").data("cursor", saveSelection())
-        return result;
+        $("#songtext").data("cursor", result)
+        return result.endOffset > result.startOffset;
     }
     
     function restoreSelection(range) {
