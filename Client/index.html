@@ -1,4 +1,4 @@
-<!doctype html  manifest="manifest.appcache">
+<!doctype html>
 <!-- paulirish.com/2008/conditional-stylesheets-vs-css-hacks-answer-neither/ -->
 <!--[if lt IE 7]> <html class="no-js lt-ie9 lt-ie8 lt-ie7" lang="en"> <![endif]-->
 <!--[if IE 7]>    <html class="no-js lt-ie9 lt-ie8" lang="en"> <![endif]-->
@@ -6,7 +6,7 @@
 
 <!-- TODO: add a manifest.appcache: h5bp.com/d/Offline -->
 
-<!--[if gt IE 8]><!--> <html class="no-js" lang="en"> <!--<![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en" manifest="XXXmanifest.appcache"> <!--<![endif]-->
 <head>
   <meta charset="utf-8">
 
@@ -45,11 +45,11 @@
   
   <!-- All JavaScript at the bottom, except this Modernizr build incl. Respond.js
        Respond is a polyfill for min/max-width media queries. Modernizr enables HTML5 elements & feature detects; 
-       for optimal performance, create your own custom Modernizr build: www.modernizr.com/download/ -->
-  <script src="js/libs/modernizr-2.0.6.min.js"></script>
+       for optimal performance, create your own custom Modernizr build: www.modernizr.com/download/  src="js/libs/modernizr-2.0.6.min.js"-->
+  <script src="http://modernizr.com/downloads/modernizr-2.5.3.js"></script>
 </head>
 
-<body>
+<body class="drop-shadow curled">
   <header>Edit away.. <span id="pos"/></header>
   
   <nav>
@@ -84,8 +84,10 @@
       <span>
         <b>HTML5 Song writer</b>.
       
-        Help: drag chords above text. <a href="#">More</a>                
+        Swipe left right to browse. Touch-hold to insert chord at cursor. Hold or double tap the title for menu.
       </span>      
+      
+      <textarea id="clipboard" class="invisible"></textarea>
   </footer>
 
   <!-- JavaScript at the bottom for fast page loading -->
@@ -95,8 +97,17 @@
   <script>window.jQuery || document.write('<script src="js/libs/jquery-1.7.2.min.js"><\/script>')</script>
   <script src="http://code.jquery.com/ui/1.8.17/jquery-ui.min.js"></script>
   <script src="http://eightmedia.github.com/hammer.js/hammer.js"></script>
-  <!-- TODO: add mobiscroll + swipejs, http://demo.mobiscroll.com/ http://swipejs.com -->
   
+  <!--
+  swipe kills selectstart event, no use
+  <script src="https://raw.github.com/bradbirdsall/Swipe/swipe2/swipe.js"></script>
+  -->
+<!--
+add to home widget: http://cubiq.org/add-to-home-screen
+swipe; http://cubiq.org/dropbox/SwipeView/demo/gallery/
+ -OR complete iscroll (for both menu + song list)
+-ELSE top menu: http://cubiq.org/dropbox/sim/
+-->
   <!-- scripts concatenated and minified via build script -->
   <script src="js/plugins.js"></script>
   <script src="js/script.js"></script>

@@ -10,8 +10,12 @@
 CACHE MANIFEST
 
 CACHE:
+index.html
+static/main.html
 /css/styles.css
 /js/scripts.js
+/js/plugins.js
+
 #/img/logo.png
 
 #http://example.com/css/styles.css
